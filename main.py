@@ -85,13 +85,14 @@ class ChatWindow(QWidget):
     def send_message(self):
         message = self.message_entry.text()
         self.message_entry.clear()
-
+        print(f"Error connecting to chat: {message}")
         if message:
             sender_ip = self.socket.getsockname()[0][:6]
             self.chat_text.append(f"{sender_ip}: {message}")
-
+            print(f"Error connecting to chat: {message}")
             try:
                 self.socket.send(message.encode('utf-8'))
+                return None
             except Exception as e:
                 print(f"Error sending message: {e}")
                 self.socket.close()
@@ -137,7 +138,6 @@ class ConnectWindow(QWidget):
     def on_connect_click(self):
         ip = self.ip_entry.text()
         port = int(self.port_entry.text())
-
         s = self.connect_to_chat(ip, port)
         if s is not None:
             self.chat_window = ChatWindow(s)
@@ -151,7 +151,8 @@ class ConnectWindow(QWidget):
             s.connect((ip, port))
             return s
         except socket.error as e:
-            QMessageBox.warning(self,f"{e}")
+            print(f"Error connecting to chat: {e}")
+            QMessageBox.information(self, "연결 실패",f"Error connecting to chat: {e}")
             return None
 
 def main():
